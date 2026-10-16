@@ -1,0 +1,786 @@
+{
+  "info": {
+    "_postman_id": "b3e34b96-6d65-4f32-8e12-875631df8a1c",
+    "name": "JTRONIX Employee API",
+    "description": "Postman collection covering all endpoints, query filters, status transitions, and error handling for JTRONIX Employee REST API assessment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Health status is ok\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"ok\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      },
+      "response": [
+        {
+          "name": "Health Check Success",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"status\": \"ok\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "List All Employees",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns array of employees\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an(\"array\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      },
+      "response": [
+        {
+          "name": "List Seeded Employees",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Rahul Sharma\",\n    \"department\": \"Engineering\",\n    \"status\": \"Active\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Priya Patel\",\n    \"department\": \"HR\",\n    \"status\": \"Active\"\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Amit Verma\",\n    \"department\": \"Engineering\",\n    \"status\": \"Inactive\"\n  }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Filter Employees by Department",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Filtered records belong to Engineering\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    jsonData.forEach(function(emp) {",
+              "        pm.expect(emp.department.toLowerCase()).to.eql(\"engineering\");",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/employees?department=Engineering",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"],
+          "query": [
+            {
+              "key": "department",
+              "value": "Engineering"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Filter by Department Match",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/employees?department=Engineering",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"],
+              "query": [{"key": "department", "value": "Engineering"}]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Rahul Sharma\",\n    \"department\": \"Engineering\",\n    \"status\": \"Active\"\n  },\n  {\n    \"id\": 3,\n    \"name\": \"Amit Verma\",\n    \"department\": \"Engineering\",\n    \"status\": \"Inactive\"\n  }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Filter Employees No Matches (Empty Array)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Returns empty array\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an(\"array\").that.is.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/employees?department=NonExistentDept",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"],
+          "query": [
+            {
+              "key": "department",
+              "value": "NonExistentDept"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Empty Array on No Matches",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/employees?department=NonExistentDept",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"],
+              "query": [{"key": "department", "value": "NonExistentDept"}]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "[]"
+        }
+      ]
+    },
+    {
+      "name": "Get Employee by ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Employee ID matches 1\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.id).to.eql(1);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/employees/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "1"]
+        }
+      },
+      "response": [
+        {
+          "name": "Employee Found",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "1"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"id\": 1,\n  \"name\": \"Rahul Sharma\",\n  \"department\": \"Engineering\",\n  \"status\": \"Active\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Employee - 404 Not Found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"Standard error format\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"NOT_FOUND\");",
+              "    pm.expect(jsonData.message).to.be.a(\"string\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/employees/999",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "999"]
+        }
+      },
+      "response": [
+        {
+          "name": "404 Not Found Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/employees/999",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "999"]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"error\": \"NOT_FOUND\",\n  \"message\": \"Employee with ID 999 not found\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Employee - 400 Bad ID (Non-Integer)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Standard validation error format\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"VALIDATION_ERROR\");",
+              "    pm.expect(jsonData.message).to.be.a(\"string\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/employees/abc",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "abc"]
+        }
+      },
+      "response": [
+        {
+          "name": "400 Bad Non-Integer ID",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/employees/abc",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "abc"]
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"error\": \"VALIDATION_ERROR\",\n  \"message\": \"id: Input should be a valid integer, unable to parse string as an integer\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Employee",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Employee created with Active status\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"Active\");",
+              "    pm.expect(jsonData.id).to.be.at.least(4);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Smit Patel\",\n  \"department\": \"Engineering\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      },
+      "response": [
+        {
+          "name": "Create Employee 201 Response",
+          "originalRequest": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Smit Patel\",\n  \"department\": \"Engineering\"\n}"
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"id\": 4,\n  \"name\": \"Smit Patel\",\n  \"department\": \"Engineering\",\n  \"status\": \"Active\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Employee - 400 Empty Name",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Error code is VALIDATION_ERROR\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"VALIDATION_ERROR\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"\",\n  \"department\": \"Engineering\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      },
+      "response": [
+        {
+          "name": "400 Empty Name Response",
+          "originalRequest": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"department\": \"Engineering\"\n}"
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"error\": \"VALIDATION_ERROR\",\n  \"message\": \"name: Name cannot be empty or whitespace-only\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Employee - 400 Whitespace Department",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Error code is VALIDATION_ERROR\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"VALIDATION_ERROR\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Bob Vance\",\n  \"department\": \"   \"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees"]
+        }
+      },
+      "response": [
+        {
+          "name": "400 Whitespace Department Response",
+          "originalRequest": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bob Vance\",\n  \"department\": \"   \"\n}"
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"error\": \"VALIDATION_ERROR\",\n  \"message\": \"department: Department cannot be empty or whitespace-only\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Employee Status to Inactive",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Status successfully updated to Inactive\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"Inactive\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Inactive\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/1/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "1", "status"]
+        }
+      },
+      "response": [
+        {
+          "name": "Status Updated to Inactive",
+          "originalRequest": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/employees/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "1", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Inactive\"\n}"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"id\": 1,\n  \"name\": \"Rahul Sharma\",\n  \"department\": \"Engineering\",\n  \"status\": \"Inactive\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Employee Status to Active",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Status successfully updated to Active\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"Active\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Active\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/3/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "3", "status"]
+        }
+      },
+      "response": [
+        {
+          "name": "Status Updated to Active",
+          "originalRequest": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/employees/3/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "3", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Active\"\n}"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"id\": 3,\n  \"name\": \"Amit Verma\",\n  \"department\": \"Engineering\",\n  \"status\": \"Active\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Status - 400 Invalid Enum Value",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test(\"Returns VALIDATION_ERROR\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"VALIDATION_ERROR\");",
+              "    pm.expect(jsonData.message.toLowerCase()).to.include(\"allowed values are 'active' or 'inactive'\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Suspended\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/1/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "1", "status"]
+        }
+      },
+      "response": [
+        {
+          "name": "400 Invalid Enum Response",
+          "originalRequest": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/employees/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "1", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Suspended\"\n}"
+            }
+          },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"error\": \"VALIDATION_ERROR\",\n  \"message\": \"status: Invalid status value. Allowed values are 'Active' or 'Inactive'\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Status - 404 Unknown Employee ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "pm.test(\"Returns NOT_FOUND\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error).to.eql(\"NOT_FOUND\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"Inactive\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/employees/999/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["employees", "999", "status"]
+        }
+      },
+      "response": [
+        {
+          "name": "404 Not Found on Status Update",
+          "originalRequest": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/employees/999/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "999", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Inactive\"\n}"
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": "{\n  \"error\": \"NOT_FOUND\",\n  \"message\": \"Employee with ID 999 not found\"\n}"
+        }
+      ]
+    }
+  ]
+}
