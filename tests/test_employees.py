@@ -280,3 +280,4 @@ def test_concurrent_employee_creation():
     assert len(set(ids)) == 20
     assert min(ids) == 4
     assert max(ids) == 23
+

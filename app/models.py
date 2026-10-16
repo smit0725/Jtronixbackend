@@ -74,3 +74,4 @@ class HealthResponse(BaseModel):
     """Health check response body."""
 
     status: str = "ok"
+

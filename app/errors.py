@@ -97,3 +97,4 @@ async def global_exception_handler(_: Request, __: Exception) -> JSONResponse:
             "message": "An unexpected internal server error occurred.",
         },
     )
+

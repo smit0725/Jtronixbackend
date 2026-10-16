@@ -75,3 +75,4 @@ class EmployeeStore:
 
 # Global singleton instance
 store = EmployeeStore()
+

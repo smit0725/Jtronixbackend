@@ -82,3 +82,4 @@ def update_employee_status(
 ) -> Employee:
     """Update employee status."""
     return store.update_status(id, payload.status)
+
